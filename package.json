@@ -1,0 +1,28 @@
+{
+  "name": "callbax",
+  "version": "0.2.0",
+  "description": "asynchronous callback extras and shortcuts for coffeescript / javascript",
+  "main": "callbax.js",
+  "scripts": {
+    "test": "coffee ./test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gvarsanyi/callbax.git"
+  },
+  "keywords": [
+    "callback",
+    "async",
+    "asynchronous",
+    "extra",
+    "functionality",
+    "error",
+    "filter"
+  ],
+  "author": "Greg VArsanyi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gvarsanyi/callbax/issues"
+  },
+  "homepage": "https://github.com/gvarsanyi/callbax"
+}
