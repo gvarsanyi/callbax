@@ -1,3 +1,4 @@
+
 build:
 	@echo "Compiling coffee-script"
 	@coffee -c callbax.coffee
@@ -7,3 +8,6 @@ build:
 	@echo "Set executable bit for runnable JS files"
 	@chmod a+x callbax.js
 	@echo " -- DONE"
+
+test: build
+	@coffee ./test.coffee

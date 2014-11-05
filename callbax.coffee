@@ -4,6 +4,7 @@
 class Callbax
   callback: null
   cleaners: null
+  fn:       null
 
   constructor: (@callback) ->
     unless typeof callback is 'function'
@@ -11,7 +12,7 @@ class Callbax
  
     @cleaners = []
 
-    return @functionize (args...) =>
+    return @fn = @functionize callback, (args...) =>
       @done args...
 
   cleanup: (fn) =>
@@ -38,7 +39,10 @@ class Callbax
       @callback args...
     true
 
-  functionize: (fn) =>
+  functionize: (source_fn, fn) =>
+    for key, value of source_fn
+      fn[key] = value
+
     fn.cleanup = @cleanup
     fn.error   = @error
     fn.pass    = @pass
@@ -52,7 +56,7 @@ class Callbax
     unless typeof handler is 'function'
       throw new Error 'handler function required'
  
-    @functionize (err, args...) =>
+    @functionize @fn, (err, args...) =>
       unless @error err
         handler args...
 

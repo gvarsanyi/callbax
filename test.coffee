@@ -27,7 +27,7 @@ test1 = (cb) ->
   fn3 = (a, b, cb) ->
     fs.readFile 'test.tmp', cb.pass ->
       cb null, 'done', b
-  
+
   fn1 1, 2, cb.next (err, a, b) ->
     if err
       console.error 'this should not happen #3', err
@@ -55,7 +55,12 @@ test2 = (cb) ->
       cleanups.push 'b'
       next()
 
-    fs.unlink 'test.tmp', cb.pass ->
+    cb.whatevz = x: 1
+
+    fs.unlink 'test.tmp', xcb = cb.pass ->
+      unless xcb.whatevz.x is 1
+        cb.error new Error 'callback property carry-over failed'
+
       cb.cleanup (err, next) ->
         cleanups.push 'c'
         next 1

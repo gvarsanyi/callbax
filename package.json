@@ -1,10 +1,10 @@
 {
   "name": "callbax",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "asynchronous callback extras and shortcuts for coffeescript / javascript",
   "main": "callbax.js",
   "scripts": {
-    "test": "coffee ./test.coffee"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
