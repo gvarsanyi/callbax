@@ -50,7 +50,7 @@ class Callbax
     fn
 
   next: (handler) =>
-    new Callbax handler
+    new Callbax @functionize @fn, handler
 
   pass: (handler) =>
     unless typeof handler is 'function'
