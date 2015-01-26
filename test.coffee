@@ -1,12 +1,12 @@
 
-callbax = require './callbax'
+callbax = require './callbax.js'
 fs      = require 'fs'
 
 test1 = (cb) ->
   fn1 = (a, b, cb) ->
     cb.cleanup (err, next) ->
       console.log 'this should not happen #1'
-      next()
+      process.exit 1
 
     fn2 a, b, cb
 
@@ -88,6 +88,64 @@ test2 = (cb) ->
       cb null, cleanups
 
 
+test3 = (cb) ->
+  cb.x = 1
+
+  a = (cb) ->
+    unless cb.x is 1
+      console.log 'this should not happen #3-a'
+      process.exit 1
+
+    setTimeout (-> cb()), 100
+
+  b = (cb) ->
+    setTimeout (-> cb()), 200
+
+  c = (cb) ->
+    unless cb.x is 1
+      console.log 'this should not happen #3-c'
+      process.exit 1
+
+    setTimeout (-> cb new Error 'eh!'), 150
+
+  d = (cb) ->
+    setTimeout (-> cb new Error 'err2'), 120
+
+
+  count1 = 0
+  cb.split a, b, (err) ->
+    if count1
+      console.log 'this should not have happened twice #3-1'
+      process.exit 1
+    count1 += 1
+
+    if err
+      console.log 'this should not happen #3-1'
+      process.exit 1
+
+    count2 = 0
+    cb.split a, b, c, d, (err) ->
+      if count2
+        console.log 'this should not have happened twice #3-2'
+        process.exit 1
+      count2 += 1
+
+      unless err and err.message is 'err2'
+        console.log 'this should not happen #3-2'
+        process.exit 1
+
+      finish = cb.next ->
+        unless cb.x is 1 and finish.x is 1
+          console.log 'this should not happen #3-finish'
+          process.exit 1
+
+        console.log 'test3: success'
+        cb()
+
+      finish()
+
+
 test1 callbax ->
   test2 callbax ->
-    process.exit 0
+    test3 callbax ->
+      process.exit 0

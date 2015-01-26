@@ -14,6 +14,7 @@
 
     function Callbax(callback) {
       this.callback = callback;
+      this.split = __bind(this.split, this);
       this.pass = __bind(this.pass, this);
       this.next = __bind(this.next, this);
       this.functionize = __bind(this.functionize, this);
@@ -80,6 +81,7 @@
       fn.error = this.error;
       fn.pass = this.pass;
       fn.next = this.next;
+      fn.split = this.split;
       return fn;
     };
 
@@ -100,6 +102,56 @@
           }
         };
       })(this));
+    };
+
+    Callbax.prototype.split = function() {
+      var check_done, errored, handler, path_count, path_done, split_fn, split_fns, split_id, _i, _j, _len, _results;
+      split_fns = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), handler = arguments[_i++];
+      if (!split_fns.length) {
+        throw new Error('split functions required');
+      }
+      if (typeof handler !== 'function') {
+        throw new Error('split handler function required');
+      }
+      check_done = function() {
+        var done, k, v;
+        done = 0;
+        for (k in path_done) {
+          v = path_done[k];
+          if (v) {
+            done += 1;
+          }
+        }
+        if (done === path_count) {
+          return handler();
+        }
+      };
+      path_count = split_fns.length;
+      path_done = {};
+      errored = false;
+      _results = [];
+      for (split_id = _j = 0, _len = split_fns.length; _j < _len; split_id = ++_j) {
+        split_fn = split_fns[split_id];
+        if (typeof split_fn !== 'function') {
+          throw new Error('split_fn must be a function');
+        }
+        path_done[split_id] = 0;
+        _results.push((function(_this) {
+          return function(split_fn, split_id) {
+            return split_fn(new Callbax(_this.functionize(_this.fn, function(err) {
+              if (!errored) {
+                if (err) {
+                  errored = true;
+                  handler(err);
+                }
+                path_done[split_id] = 1;
+                return check_done();
+              }
+            })));
+          };
+        })(this)(split_fn, split_id));
+      }
+      return _results;
     };
 
     return Callbax;
