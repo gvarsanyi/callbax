@@ -7,12 +7,12 @@ class Callbax
   fn:       null
 
   constructor: (@callback) ->
-    unless typeof callback is 'function'
+    unless typeof @callback is 'function'
       throw new Error 'callback function required'
  
     @cleaners = []
 
-    return @fn = @functionize callback, (args...) =>
+    return @fn = @functionize @callback, (args...) =>
       @done args...
 
   cleanup: (fn) =>
@@ -69,13 +69,13 @@ class Callbax
 
     check_done = ->
       done = 0
-      for k, v of path_done when v
+      for v in path_done when v
         done += 1
       if done is path_count
-        handler()
+        handler null, path_done
 
     path_count = split_fns.length
-    path_done  = {}
+    path_done  = []
     errored    = false
 
     for split_fn, split_id in split_fns
@@ -87,15 +87,21 @@ class Callbax
       unless typeof split_fn is 'function'
         throw new Error 'split_fn must be a function'
 
-      path_done[split_id] = 0
+      path_done[split_id] = null
       do (split_id) =>
-        split_fn args..., new Callbax @functionize @fn, (err) ->
+        split_fn args..., new Callbax @functionize @fn, (err, args...) ->
           unless errored
             if err
               errored = true
-              handler err
+              return handler err, []
 
-            path_done[split_id] = 1
+            res = []
+            if err isnt undefined or args.length
+              if args.length
+                res.push err, args...
+              else
+                res.push err
+            path_done[split_id] = res
             check_done()
 
 

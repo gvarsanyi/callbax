@@ -2,6 +2,7 @@
 callbax = require './callbax.js'
 fs      = require 'fs'
 
+
 test1 = (cb) ->
   fn1 = (a, b, cb) ->
     cb.cleanup (err, next) ->
@@ -99,7 +100,7 @@ test3 = (cb) ->
       console.log 'this should not happen #3-b'
       process.exit 1
 
-    setTimeout (-> cb()), 100
+    setTimeout (-> cb null, 'a', 'b'), 100
 
   b = (cb) ->
     setTimeout (-> cb()), 200
@@ -116,10 +117,23 @@ test3 = (cb) ->
 
 
   count1 = 0
-  cb.split [a, 'x', 'y'], b, (err) ->
+  cb.split [a, 'x', 'y'], b, (err, responses) ->
     if count1
-      console.log 'this should not have happened twice #3-1'
+      console.log 'this should not have happened twice #3-1a'
       process.exit 1
+    if responses.length isnt 2
+      console.log 'this should not have happened twice #3-1b'
+      process.exit 1
+    if responses[0].length isnt 3 or responses[0][0]?
+      console.log 'this should not have happened twice #3-1c'
+      process.exit 1
+    if responses[0][1] isnt 'a' or responses[0][2] isnt 'b'
+      console.log 'this should not have happened twice #3-1d'
+      process.exit 1
+    if responses[1].length isnt 0
+      console.log 'this should not have happened twice #3-1e'
+      process.exit 1
+
     count1 += 1
 
     if err
@@ -127,14 +141,17 @@ test3 = (cb) ->
       process.exit 1
 
     count2 = 0
-    cb.split [a, 'x', 'y'], b, c, d, (err) ->
+    cb.split [a, 'x', 'y'], b, c, d, (err, responses) ->
       if count2
-        console.log 'this should not have happened twice #3-2'
+        console.log 'this should not have happened twice #3-2a'
+        process.exit 1
+      if responses.length isnt 0
+        console.log 'this should not have happened twice #3-2b'
         process.exit 1
       count2 += 1
 
       unless err and err.message is 'err2'
-        console.log 'this should not happen #3-2'
+        console.log 'this should not happen #3-3'
         process.exit 1
 
       finish = cb.next ->
