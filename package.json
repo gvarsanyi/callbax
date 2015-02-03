@@ -1,6 +1,6 @@
 {
   "name": "callbax",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "asynchronous callback extras and shortcuts for coffeescript / javascript",
   "main": "callbax.js",
   "scripts": {

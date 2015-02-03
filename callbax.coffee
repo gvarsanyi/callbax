@@ -62,10 +62,10 @@ class Callbax
         handler args...
 
   split: (split_fns..., handler) =>
-    unless split_fns.length
-      throw new Error 'split functions required'
     unless typeof handler is 'function'
       throw new Error 'split handler function required'
+    unless split_fns.length
+      handler new Error 'split functions required'
 
     check_done = ->
       done = 0

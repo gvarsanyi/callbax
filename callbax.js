@@ -106,11 +106,11 @@
     Callbax.prototype.split = function() {
       var args, check_done, errored, handler, path_count, path_done, split_fn, split_fns, split_id, _i, _j, _len, _results;
       split_fns = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), handler = arguments[_i++];
-      if (!split_fns.length) {
-        throw new Error('split functions required');
-      }
       if (typeof handler !== 'function') {
         throw new Error('split handler function required');
+      }
+      if (!split_fns.length) {
+        handler(new Error('split functions required'));
       }
       check_done = function() {
         var done, v, _j, _len;

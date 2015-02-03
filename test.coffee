@@ -92,77 +92,82 @@ test2 = (cb) ->
 test3 = (cb) ->
   cb.x = 1
 
-  a = (x, y, cb) ->
-    unless cb.x is 1
-      console.log 'this should not happen #3-a'
-      process.exit 1
-    unless x is 'x' and y is 'y'
-      console.log 'this should not happen #3-b'
+  cb.split (err) ->
+    unless err
+      console.log 'this should not happen #3-err'
       process.exit 1
 
-    setTimeout (-> cb null, 'a', 'b'), 100
-
-  b = (cb) ->
-    setTimeout (-> cb()), 200
-
-  c = (cb) ->
-    unless cb.x is 1
-      console.log 'this should not happen #3-c'
-      process.exit 1
-
-    setTimeout (-> cb new Error 'eh!'), 150
-
-  d = (cb) ->
-    setTimeout (-> cb new Error 'err2'), 120
-
-
-  count1 = 0
-  cb.split [a, 'x', 'y'], b, (err, responses) ->
-    if count1
-      console.log 'this should not have happened twice #3-1a'
-      process.exit 1
-    if responses.length isnt 2
-      console.log 'this should not have happened twice #3-1b'
-      process.exit 1
-    if responses[0].length isnt 3 or responses[0][0]?
-      console.log 'this should not have happened twice #3-1c'
-      process.exit 1
-    if responses[0][1] isnt 'a' or responses[0][2] isnt 'b'
-      console.log 'this should not have happened twice #3-1d'
-      process.exit 1
-    if responses[1].length isnt 0
-      console.log 'this should not have happened twice #3-1e'
-      process.exit 1
-
-    count1 += 1
-
-    if err
-      console.log 'this should not happen #3-1'
-      process.exit 1
-
-    count2 = 0
-    cb.split [a, 'x', 'y'], b, c, d, (err, responses) ->
-      if count2
-        console.log 'this should not have happened twice #3-2a'
+    a = (x, y, cb) ->
+      unless cb.x is 1
+        console.log 'this should not happen #3-a'
         process.exit 1
-      if responses.length isnt 0
-        console.log 'this should not have happened twice #3-2b'
-        process.exit 1
-      count2 += 1
-
-      unless err and err.message is 'err2'
-        console.log 'this should not happen #3-3'
+      unless x is 'x' and y is 'y'
+        console.log 'this should not happen #3-b'
         process.exit 1
 
-      finish = cb.next ->
-        unless cb.x is 1 and finish.x is 1
-          console.log 'this should not happen #3-finish'
+      setTimeout (-> cb null, 'a', 'b'), 100
+
+    b = (cb) ->
+      setTimeout (-> cb()), 200
+
+    c = (cb) ->
+      unless cb.x is 1
+        console.log 'this should not happen #3-c'
+        process.exit 1
+
+      setTimeout (-> cb new Error 'eh!'), 150
+
+    d = (cb) ->
+      setTimeout (-> cb new Error 'err2'), 120
+
+
+    count1 = 0
+    cb.split [a, 'x', 'y'], b, (err, responses) ->
+      if count1
+        console.log 'this should not have happened twice #3-1a'
+        process.exit 1
+      if responses.length isnt 2
+        console.log 'this should not have happened twice #3-1b'
+        process.exit 1
+      if responses[0].length isnt 3 or responses[0][0]?
+        console.log 'this should not have happened twice #3-1c'
+        process.exit 1
+      if responses[0][1] isnt 'a' or responses[0][2] isnt 'b'
+        console.log 'this should not have happened twice #3-1d'
+        process.exit 1
+      if responses[1].length isnt 0
+        console.log 'this should not have happened twice #3-1e'
+        process.exit 1
+
+      count1 += 1
+
+      if err
+        console.log 'this should not happen #3-1'
+        process.exit 1
+
+      count2 = 0
+      cb.split [a, 'x', 'y'], b, c, d, (err, responses) ->
+        if count2
+          console.log 'this should not have happened twice #3-2a'
+          process.exit 1
+        if responses.length isnt 0
+          console.log 'this should not have happened twice #3-2b'
+          process.exit 1
+        count2 += 1
+
+        unless err and err.message is 'err2'
+          console.log 'this should not happen #3-3'
           process.exit 1
 
-        console.log 'test3: success'
-        cb()
+        finish = cb.next ->
+          unless cb.x is 1 and finish.x is 1
+            console.log 'this should not happen #3-finish'
+            process.exit 1
 
-      finish()
+          console.log 'test3: success'
+          cb()
+
+        finish()
 
 
 test1 callbax ->
