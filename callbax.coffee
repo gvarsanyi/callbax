@@ -79,12 +79,17 @@ class Callbax
     errored    = false
 
     for split_fn, split_id in split_fns
+      if Array.isArray split_fn
+        args = split_fn[1 ..]
+        split_fn = split_fn[0]
+      else
+        args = []
       unless typeof split_fn is 'function'
         throw new Error 'split_fn must be a function'
 
       path_done[split_id] = 0
-      do (split_fn, split_id) =>
-        split_fn new Callbax @functionize @fn, (err) ->
+      do (split_id) =>
+        split_fn args..., new Callbax @functionize @fn, (err) ->
           unless errored
             if err
               errored = true

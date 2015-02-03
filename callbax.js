@@ -105,7 +105,7 @@
     };
 
     Callbax.prototype.split = function() {
-      var check_done, errored, handler, path_count, path_done, split_fn, split_fns, split_id, _i, _j, _len, _results;
+      var args, check_done, errored, handler, path_count, path_done, split_fn, split_fns, split_id, _i, _j, _len, _results;
       split_fns = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), handler = arguments[_i++];
       if (!split_fns.length) {
         throw new Error('split functions required');
@@ -132,13 +132,19 @@
       _results = [];
       for (split_id = _j = 0, _len = split_fns.length; _j < _len; split_id = ++_j) {
         split_fn = split_fns[split_id];
+        if (Array.isArray(split_fn)) {
+          args = split_fn.slice(1);
+          split_fn = split_fn[0];
+        } else {
+          args = [];
+        }
         if (typeof split_fn !== 'function') {
           throw new Error('split_fn must be a function');
         }
         path_done[split_id] = 0;
         _results.push((function(_this) {
-          return function(split_fn, split_id) {
-            return split_fn(new Callbax(_this.functionize(_this.fn, function(err) {
+          return function(split_id) {
+            return split_fn.apply(null, __slice.call(args).concat([new Callbax(_this.functionize(_this.fn, function(err) {
               if (!errored) {
                 if (err) {
                   errored = true;
@@ -147,9 +153,9 @@
                 path_done[split_id] = 1;
                 return check_done();
               }
-            })));
+            }))]));
           };
-        })(this)(split_fn, split_id));
+        })(this)(split_id));
       }
       return _results;
     };

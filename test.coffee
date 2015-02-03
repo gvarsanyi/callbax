@@ -91,9 +91,12 @@ test2 = (cb) ->
 test3 = (cb) ->
   cb.x = 1
 
-  a = (cb) ->
+  a = (x, y, cb) ->
     unless cb.x is 1
       console.log 'this should not happen #3-a'
+      process.exit 1
+    unless x is 'x' and y is 'y'
+      console.log 'this should not happen #3-b'
       process.exit 1
 
     setTimeout (-> cb()), 100
@@ -113,7 +116,7 @@ test3 = (cb) ->
 
 
   count1 = 0
-  cb.split a, b, (err) ->
+  cb.split [a, 'x', 'y'], b, (err) ->
     if count1
       console.log 'this should not have happened twice #3-1'
       process.exit 1
@@ -124,7 +127,7 @@ test3 = (cb) ->
       process.exit 1
 
     count2 = 0
-    cb.split a, b, c, d, (err) ->
+    cb.split [a, 'x', 'y'], b, c, d, (err) ->
       if count2
         console.log 'this should not have happened twice #3-2'
         process.exit 1
