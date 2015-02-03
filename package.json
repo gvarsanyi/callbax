@@ -6,6 +6,9 @@
   "scripts": {
     "test": "make test"
   },
+  "devDependencies": {
+    "coffee-script": "1.9.0"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/gvarsanyi/callbax.git"
