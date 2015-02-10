@@ -110,7 +110,7 @@
         throw new Error('split handler function required');
       }
       if (!split_fns.length) {
-        handler(new Error('split functions required'));
+        return handler(null, []);
       }
       check_done = function() {
         var done, v, _j, _len;

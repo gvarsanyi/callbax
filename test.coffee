@@ -93,7 +93,7 @@ test3 = (cb) ->
   cb.x = 1
 
   cb.split (err) ->
-    unless err
+    if err
       console.log 'this should not happen #3-err'
       process.exit 1
 
